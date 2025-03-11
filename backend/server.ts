@@ -8,7 +8,7 @@ import itemRouter from "./src/routes/itemRouter";
 dotenv.config();
 
 const app = express();
-const port = Number(process.env.Port);
+const port = process.env.Port;
 
 
 app.use(express.json());
