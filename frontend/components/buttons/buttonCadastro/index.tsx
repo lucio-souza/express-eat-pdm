@@ -1,12 +1,13 @@
 import { View,Text,TouchableOpacity, StyleSheet } from "react-native";
 
 type props={
-    text:String
+    text:string,
+    Onchange:()=>void
 }
 
-export const ButtonCadastro=({text}:props)=>{
+export const ButtonCadastro=({text,Onchange}:props)=>{
     return(
-        <TouchableOpacity style={style.button}>
+        <TouchableOpacity style={style.button} onPress={Onchange}>
             <Text style={style.text}>{text}</Text>
         </TouchableOpacity>
     )
