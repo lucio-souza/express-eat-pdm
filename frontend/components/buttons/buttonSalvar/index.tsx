@@ -14,18 +14,20 @@ export const ButtonEnviar=({text}:props)=>{
 
 const style=  StyleSheet.create({
     button:{
+        flexDirection:"row",
+        alignItems:"center",
+        justifyContent:"center",
         backgroundColor:"#8FCFEE",
         borderRadius:30,
         padding:10,
         width:"20%",
-        height:"100%",
+        height:"8%",
         marginTop:20,
-        marginHorizontal:20
+        marginHorizontal:20,
     },
     text:{
         textAlign:"center",
         color:"#0C3950",
         fontSize:16
     }
-
 })

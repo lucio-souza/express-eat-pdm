@@ -16,15 +16,14 @@ const Login=()=>{
             <Form valor={email} SetValor={setEmail} text="Digite Seu Email"/>
             <Form valor={senha} SetValor={setSenha} text="Digite Sua Senha"/>
 
-            
-
-            <View style={style.button}>            
+                       
                 <ButtonEnviar text={"Enviar"}/>
-                <ButtonEnviar text={"voltar"}/>
-            </View>
+            <TouchableOpacity>
+                <Text style={style.textoConta}>Faça o Cadastro como cliente</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity>
-                <Text style={style.textoConta}>Faça o Cadastro</Text>
+                <Text style={style.textoConta}>Faça o Cadastro Como Restaurante</Text>
             </TouchableOpacity>
 
             </View>
@@ -54,6 +53,8 @@ const style=StyleSheet.create({
         marginTop:30
     },
     button:{
+        width:"100%",
+        backgroundColor:"black",
         height:"7%",
         alignItems:"center",
         flexDirection:"row",

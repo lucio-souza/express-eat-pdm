@@ -1,12 +1,12 @@
 import React from "react";
 
-import Start  from "./inicio/_layout";
+import Login from "./login/_layout";
 
 export default function App() {
 
   return (
     <>
-      <Start />
+      <Login/>
     </>
   )
 }
