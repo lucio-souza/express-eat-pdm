@@ -5,7 +5,6 @@ import { Form } from "../../components/form";
 import z from "zod"
 import { ButtonEnviar } from "../../components/buttons/buttonSalvar";
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from "axios";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -13,7 +12,10 @@ const Login = () => {
 
     type LoginData = z.infer<typeof loginSchema>;
 
-    const { logar } = useAuth();
+    const { logar,checkToken } = useAuth();
+
+    checkToken("/home");
+    
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
@@ -24,6 +26,8 @@ const Login = () => {
 
     const OnSubmit = async (data: LoginData) => {
         const { email, senha } = data;
+        console.log(data);
+        
 
         try {
             await logar(email, senha);

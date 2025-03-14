@@ -13,14 +13,14 @@ const FooterMenu = () => {
                 <Text style={styles.footerText}>Início</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.footerItem} onPress={() => router.replace('/search')}>
+            <TouchableOpacity style={styles.footerItem} onPress={() => router.replace('/pesquisa')}>
                 <Ionicons name="search" size={24} color="#000" />
                 <Text style={styles.footerText}>Buscar</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.footerItem} onPress={() => router.replace('/favorites')}>
-                <Ionicons name="heart" size={24} color="#000" />
-                <Text style={styles.footerText}>Favoritos</Text>
+            <TouchableOpacity style={styles.footerItem} onPress={() => router.replace('/pedidos')}>
+                <Ionicons name="document" size={24} color="#000" />
+                <Text style={styles.footerText}>pedidos</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.footerItem} onPress={() => router.replace('/profile')}>

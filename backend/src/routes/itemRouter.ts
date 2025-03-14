@@ -1,7 +1,8 @@
-
 import { Router } from "express"
 import ItemController from "../controller/ItemController";
 import upload from "../middlewares/configMulter";
+import express from 'express';
+import path from 'path';
 
 const itemRouter = Router();
 
@@ -12,5 +13,14 @@ itemRouter.delete('/:id',ItemController.deleteItem)
 itemRouter.delete('/all/:id',ItemController.deleteAllItens)
 itemRouter.get('/:id',ItemController.getItemById)
 itemRouter.post('/:id', upload.single('image'), ItemController.uploadImage)
+
+itemRouter.use('/images', express.static(path.join(__dirname, '../../uploads')));
+
+// Rota para visualizar a imagem pelo nome do arquivo
+itemRouter.get('/image/:filename', (req, res) => {
+    const { filename } = req.params;
+    const filePath = path.join(__dirname, '../../uploads', filename);
+    res.sendFile(filePath);
+});
 
 export default itemRouter;

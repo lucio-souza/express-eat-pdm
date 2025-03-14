@@ -30,9 +30,15 @@ export function AuthProviderContext({ children }: IProps) {
         const dados = { email, senha};
 
         try {
-            const response = await axios.post('http://192.168.2.108:8080/users/login', dados);
+            console.log("#$@#$@#$@#$#@$@$@#$#@$#@$@#$@#$#@$");
+            
+            console.log(dados);
+            const response = await axios.post('http://10.3.21.50:8080/users/login', dados);
+            
 
-            const { token } = response.data as { token: string, nome: string };
+            const { token } = response.data as { token: string
+                
+            };
             axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
             await AsyncStorage.setItem('auth.token', token);
@@ -60,28 +66,26 @@ export function AuthProviderContext({ children }: IProps) {
     }
 
 
-    async function checkToken(namePage?: Href) {
+    async function checkToken(Href?: Href) {
         try {
             const tokenStorage = await AsyncStorage.getItem('auth.token');
             console.log('Token:', tokenStorage);
 
             if (tokenStorage) {
                 axios.defaults.headers.common.Authorization = `Bearer ${tokenStorage}`; 
-                const response = await axios.get("http://192.168.2.108:8080/validate-token", {
+                const response = await axios.get("http://10.3.21.50:8080/validate-token", {
                     headers: {
                         Authorization: `Bearer ${tokenStorage}`,
                     },
                 });
 
                 if (response.status === 200) {
-                    setTokenState(tokenStorage); 
-                    if (namePage) {
-                        router.replace(namePage);
+                    if (!Href){
+                        return
                     }
+                    router.replace(Href);
                 }
-            } else {
-                router.replace('/login');
-            }
+            } 
         } catch (error) {
             console.error('Erro ao verificar o token:', error);
             router.replace('/login'); 
