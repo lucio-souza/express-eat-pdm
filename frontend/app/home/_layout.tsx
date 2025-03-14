@@ -48,49 +48,75 @@ const Home = () => {
         return itens.filter((item) => item.restauranteId === restauranteId);
     };
 
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
-    }
+
+    
 
     return (
         <View style={styles.container}>
             <Text style={styles.welcomeText}>Bem-vindo</Text>
 
-            <Text style={styles.sectionTitle}>Melhores avaliações</Text>
-            <View style={styles.itemContainer}>
-                <Text style={styles.itemTitle}>Pizza M de pepperoni</Text>
-                <Text style={styles.itemPrice}>R$ 25,00</Text>
-            </View>
-            <View style={styles.itemContainer}>
-                <Text style={styles.itemTitle}>Açai 500ml + 6 complementos</Text>
-                <Text style={styles.itemPrice}>R$ 20,00</Text>
-            </View>
+            <Text style={styles.textItem}>Recomendações</Text>
+            <ScrollView style={styles.itemsContainer}>
+                {restaurantes.map((restaurante) => (
+                    <View key={restaurante.id} style={styles.itemsContainer}>
+
+                        <ScrollView  style={styles.itemsContainer}>
+                            {getItensByRestaurante(restaurante.id).map((item) => {return(
+                                
+                                <View key={item.id} style={styles.itemCard}>
+                                    <Image source={{ uri: `http://192.168.2.108:8080/itens/image/${item.src.replace("uploads/","")}` }} style={styles.itemImage} />
+
+                                    <Text style={styles.itemCardTitle}>{item.nome}</Text>
+                                    
+                                    <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
+                                </View>
+                                )
+})}
+                        </ScrollView>
+                    </View>
+                ))}
+            </ScrollView>
+
+            <ScrollView>
+                {restaurantes.map((restaurante) => (
+                    <View key={restaurante.id}>
+
+                        <ScrollView  style={styles.itemsContainer}>
+                            {getItensByRestaurante(restaurante.id).map((item) => {return(
+                                
+                                <View key={item.id} style={styles.itemCard}>
+                                    <Image source={{ uri: `http://192.168.2.108:8080/itens/image/${item.src.replace("uploads/","")}` }} style={styles.itemImage} />
+
+                                    <Text style={styles.itemCardTitle}>{item.nome}</Text>
+                                    
+                                    <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
+                                </View>
+                                )
+})}
+                        </ScrollView>
+                    </View>
+                ))}
+            </ScrollView>
+
 
             <Text style={styles.sectionTitle}>Restaurantes</Text>
             <ScrollView>
                 {restaurantes.map((restaurante) => (
                     <View key={restaurante.id} style={styles.restaurantContainer}>
+                        <Image source={require("../../assets/Mansao.png")}></Image>
                         <Text style={styles.restaurantName}>{restaurante.nome}</Text>
                         <Text style={styles.restaurantRating}>
                             {restaurante.avaliacao === 0 ? "Restaurante novo" : `${restaurante.avaliacao} ⭐`}
                         </Text>
-
-                        {/* Lista de itens do restaurante */}
-                        <ScrollView horizontal style={styles.itemsContainer}>
-                            {getItensByRestaurante(restaurante.id).map((item) => (
+                        <ScrollView  style={styles.itemsContainer}>
+                            {getItensByRestaurante(restaurante.id).map((item) => {return(
+                                
                                 <View key={item.id} style={styles.itemCard}>
-                                    <Image
-                                        source={{ uri: item.src }}
-                                        style={styles.itemImage}
-                                    />
-                                    <Text style={styles.itemCardTitle}>{item.nome}</Text>
-                                    <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
+                                    
+                                    <Text style={styles.itemCardPrice}>Menor preço R$ {item.valor}</Text>
                                 </View>
-                            ))}
+                                )
+})}
                         </ScrollView>
                     </View>
                 ))}
@@ -124,6 +150,7 @@ const styles = StyleSheet.create({
     },
     itemContainer: {
         marginBottom: 16,
+        flexDirection:"column",
     },
     itemTitle: {
         fontSize: 16,
@@ -145,25 +172,30 @@ const styles = StyleSheet.create({
         color: 'orange',
     },
     itemsContainer: {
+        flexDirection:"column",
         marginTop: 8,
     },
     itemCard: {
         marginRight: 16,
-        width: 150,
+        width: "100%",
+        height: 200,
     },
     itemImage: {
-        width: 150,
+        width: "50%",
         height: 100,
         borderRadius: 8,
     },
     itemCardTitle: {
-        fontSize: 14,
-        marginTop: 8,
+        fontSize: 20,
+        marginTop: 12,
     },
     itemCardPrice: {
-        fontSize: 14,
+        fontSize: 16,
         color: 'gray',
     },
+    textItem:{
+        fontSize: 20
+    }
 });
 
 export default Home;
