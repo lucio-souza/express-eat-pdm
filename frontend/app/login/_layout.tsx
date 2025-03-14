@@ -13,7 +13,7 @@ const Login = () => {
 
     type LoginData = z.infer<typeof loginSchema>;
 
-    const { login } = useAuth();
+    const { logar } = useAuth();
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
@@ -26,7 +26,7 @@ const Login = () => {
         const { email, senha } = data;
 
         try {
-            await login(email, senha);
+            await logar(email, senha);
             router.replace('/home');
         } catch (error) {
             console.error('Erro:', error);

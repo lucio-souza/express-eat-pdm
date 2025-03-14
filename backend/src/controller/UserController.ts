@@ -11,6 +11,14 @@ class UserController {
       : res.status(data.status).json({ message: data.message, erro: data.error });
   }
 
+  async listUserById(req: Request, res: Response) {
+    const { id } = req.params;
+    const data = await UserRepository.getUserById(id);
+    data.status === 200
+    ? res.status(200).json(data.usuario)
+    : res.status(data.status).json({ message: data.message, erro: data.error });
+  }
+
   async listUserByEmail(req: Request, res: Response) {
     const { email } = req.params;
     const data = await UserRepository.getUserByEmail(email);

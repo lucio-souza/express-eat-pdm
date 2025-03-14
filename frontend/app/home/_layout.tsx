@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import FooterMenu from '../../components/footerMenu';
 import axios from 'axios';
-import { useAuth } from '../../hooks/useAuth';
 
 const Home = () => {
+    interface Item {
+        id: number;
+        nome: string;
+        valor: number;
+        src: string;
+        restauranteId: number; // Relacionamento com o restaurante
+    }
+
     interface Restaurante {
         id: number;
         nome: string;
@@ -13,59 +20,53 @@ const Home = () => {
     }
 
     const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
-    const [nomeUsuario, setNomeUsuario] = useState<string>('');
+    const [itens, setItens] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
-
-    const { tokenState, checkToken } = useAuth(); // Acessa o token e a função checkToken
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Verifica se o token é válido
-                await checkToken('/home');
+                // Busca a lista de restaurantes
+                const restaurantsResponse = await axios.get('http://192.168.2.108:8080/restaurantes');
+                setRestaurantes(restaurantsResponse.data);
 
-                if (tokenState) {
-                    console.log('Token:', tokenState); // Log do token para depuração
-
-                    // Faz a requisição para buscar o nome do usuário
-                    const userResponse = await axios.get(`http://192.168.2.108:8080/users/me`, {
-                        headers: { Authorization: `Bearer ${tokenState}` },
-                    });
-                    setNomeUsuario(userResponse.data.nome);
-
-                    // Faz a requisição para buscar os restaurantes
-                    const restaurantsResponse = await axios.get('http://192.168.2.108:8080/restaurantes', {
-                        headers: { Authorization: `Bearer ${tokenState}` },
-                    });
-                    setRestaurantes(restaurantsResponse.data);
-                } else {
-                    console.error('Token não está disponível');
-                }
+                // Busca a lista de itens
+                const itemsResponse = await axios.get('http://192.168.2.108:8080/itens');
+                setItens(itemsResponse.data);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
             } finally {
-                setLoading(false);
+                setLoading(false); // Finaliza o carregamento
             }
         };
 
         fetchData();
-    }, [tokenState, checkToken]); // Adiciona tokenState e checkToken como dependências
+    }, []);
+
+    // Função para filtrar os itens de um restaurante específico
+    const getItensByRestaurante = (restauranteId: number) => {
+        return itens.filter((item) => item.restauranteId === restauranteId);
+    };
 
     if (loading) {
-        return <Text>Carregando...</Text>;
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.welcomeText}>Bem vindo, {nomeUsuario || 'Usuário'}</Text>
+            <Text style={styles.welcomeText}>Bem-vindo</Text>
 
             <Text style={styles.sectionTitle}>Melhores avaliações</Text>
             <View style={styles.itemContainer}>
-                <Text style={styles.itemTitle}>Pizza M de peperoni</Text>
+                <Text style={styles.itemTitle}>Pizza M de pepperoni</Text>
                 <Text style={styles.itemPrice}>R$ 25,00</Text>
             </View>
             <View style={styles.itemContainer}>
-                <Text style={styles.itemTitle}>Açai 500ml + 6 com...</Text>
+                <Text style={styles.itemTitle}>Açai 500ml + 6 complementos</Text>
                 <Text style={styles.itemPrice}>R$ 20,00</Text>
             </View>
 
@@ -75,8 +76,22 @@ const Home = () => {
                     <View key={restaurante.id} style={styles.restaurantContainer}>
                         <Text style={styles.restaurantName}>{restaurante.nome}</Text>
                         <Text style={styles.restaurantRating}>
-                            {restaurante.avaliacao === 0 ? "Restaurante novo" : restaurante.avaliacao}
+                            {restaurante.avaliacao === 0 ? "Restaurante novo" : `${restaurante.avaliacao} ⭐`}
                         </Text>
+
+                        {/* Lista de itens do restaurante */}
+                        <ScrollView horizontal style={styles.itemsContainer}>
+                            {getItensByRestaurante(restaurante.id).map((item) => (
+                                <View key={item.id} style={styles.itemCard}>
+                                    <Image
+                                        source={{ uri: item.src }}
+                                        style={styles.itemImage}
+                                    />
+                                    <Text style={styles.itemCardTitle}>{item.nome}</Text>
+                                    <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
+                                </View>
+                            ))}
+                        </ScrollView>
                     </View>
                 ))}
             </ScrollView>
@@ -90,6 +105,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     welcomeText: {
         fontSize: 24,
@@ -113,17 +133,36 @@ const styles = StyleSheet.create({
         color: 'gray',
     },
     restaurantContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 24,
     },
     restaurantName: {
-        fontSize: 16,
-        flex: 1,
+        fontSize: 18,
+        fontWeight: 'bold',
     },
     restaurantRating: {
         fontSize: 16,
-        marginRight: 8,
+        marginTop: 4,
+        color: 'orange',
+    },
+    itemsContainer: {
+        marginTop: 8,
+    },
+    itemCard: {
+        marginRight: 16,
+        width: 150,
+    },
+    itemImage: {
+        width: 150,
+        height: 100,
+        borderRadius: 8,
+    },
+    itemCardTitle: {
+        fontSize: 14,
+        marginTop: 8,
+    },
+    itemCardPrice: {
+        fontSize: 14,
+        color: 'gray',
     },
 });
 
