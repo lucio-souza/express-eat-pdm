@@ -1,12 +1,13 @@
 import {Text,TouchableOpacity, StyleSheet } from "react-native";
 
 type props={
-    text:string
+    text:string,
+    Press:()=>void
 }
 
-export const ButtonEnviar=({text}:props)=>{
+export const ButtonEnviar=({text,Press}:props)=>{
     return(
-        <TouchableOpacity style={style.button}>
+        <TouchableOpacity style={style.button} onPress={Press}>
             <Text style={style.text}>{text}</Text>
         </TouchableOpacity>
     )
@@ -20,7 +21,7 @@ const style=  StyleSheet.create({
         backgroundColor:"#8FCFEE",
         borderRadius:30,
         padding:10,
-        width:"20%",
+        width:"45%",
         height:"8%",
         marginTop:20,
         marginHorizontal:20,
@@ -28,6 +29,6 @@ const style=  StyleSheet.create({
     text:{
         textAlign:"center",
         color:"#0C3950",
-        fontSize:16
+        fontSize:22
     }
 })
