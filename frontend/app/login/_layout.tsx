@@ -7,6 +7,7 @@ import { ButtonEnviar } from "../../components/buttons/buttonSalvar";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from "expo-router";
 import { useAuth } from "../../hooks/useAuth";
+import { useState } from "react";
 
 const Login = () => {
 
@@ -22,17 +23,20 @@ const Login = () => {
   });
 
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("");
 
 
     const OnSubmit = async (data: LoginData) => {
+      setErrorMessage(""); 
         const { email, senha } = data;
         console.log(data);
         
 
         try {
             await logar(email, senha);
-            router.replace('/home');
-        } catch (error) {
+        } catch (error:any) {
+          setErrorMessage(error.message);
+          
             console.error('Erro:', error);
         }
     };
@@ -45,6 +49,7 @@ const Login = () => {
     <View style={style.container}>
       <Image style={style.img} source={require('../../assets/logo.png')} /> 
       <Text style={style.texto}>Login</Text>
+      
 
       <Controller
         control={control}
@@ -74,10 +79,13 @@ const Login = () => {
 
       
       <ButtonEnviar text={"Enviar"} Press={handleSubmit(OnSubmit)} />
+      
 
       <TouchableOpacity onPress={redirect}>
         <Text style={style.textoConta}>Faça o Cadastro</Text>
       </TouchableOpacity>
+
+      {errorMessage ? <Text style={style.errorText}>{errorMessage}</Text> : null}
     </View>
   );
 };
@@ -99,7 +107,8 @@ const style = StyleSheet.create({
   textoConta: {
     color: "#0C3950",
     textDecorationLine: "underline",
-    marginTop: 30
+    fontSize: 20,
+    marginTop: 20
   },
   button: {
     width: "100%",
@@ -107,7 +116,13 @@ const style = StyleSheet.create({
     height: "7%",
     alignItems: "center",
     flexDirection: "row",
-  }
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    marginBottom: 5,
+    marginTop: 20,
+}
 });
 
 export default Login;
