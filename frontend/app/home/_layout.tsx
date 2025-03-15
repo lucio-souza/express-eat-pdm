@@ -3,49 +3,68 @@ import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'rea
 import FooterMenu from '../../components/footerMenu';
 import axios from 'axios';
 import { router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+
 
 const Home = () => {
 
-    
-
     interface Item {
-        id: number;
+        _id: string;
         nome: string;
         valor: number;
         src: string;
-        restauranteId: number; // Relacionamento com o restaurante
+        idRestaurante: string; 
     }
 
     interface Restaurante {
-        id: number;
+        _id: string;
         nome: string;
         avaliacao: number;
         price: string;
     }
+    interface User {
+        id: string;
+        nome: string;
+        email: string;
+    }
 
     const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
     const [itens, setItens] = useState<Item[]>([]);
+    const [user, setUser] = useState<User | null>(null);
+
+    const { email} = useLocalSearchParams();
+
+
 
     useEffect(() => {
+        const fetch=async()=>{
+            try {
+                const response = await axios.get(`http://192.168.2.108:8080/users/${email}`);
+                setUser(response.data);
+            } catch (error) {
+                console.error('Erro ao buscar usuário:', error);
+            }
+            }
         const fetchData = async () => {
             try {
-                const restaurantsResponse = await axios.get('http://10.3.21.50:8080/restaurantes');
+                const restaurantsResponse = await axios.get('http://192.168.2.108:8080/restaurantes');
                 setRestaurantes(restaurantsResponse.data);
 
                 
-                const itemsResponse = await axios.get('http://10.3.21.50:8080/itens');
+                const itemsResponse = await axios.get('http://192.168.2.108:8080/itens');
                 setItens(itemsResponse.data);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
             }
         };
-
+        if (email) {
+            fetch();
+        }
         fetchData();
-    }, []);
+    }, [email]);
 
-    // Função para filtrar os itens de um restaurante específico
-    const getItensByRestaurante = (restauranteId: number) => {
-        return itens.filter((item) => item.restauranteId === restauranteId);
+    const getItensByRestaurante = (idRestaurante: string) => {
+        return itens.filter((item) => item.idRestaurante === idRestaurante).slice(0, 1);
     };
 
 
@@ -53,67 +72,37 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.welcomeText}>Bem-vindo</Text>
+            <ScrollView>
+            <Text style={styles.welcomeText}>Bem-vindo, {user ? user.nome : 'Visitante'}</Text>
 
             <Text style={styles.textItem}>Recomendações</Text>
 
             <View style={styles.itemsContainer}>
-                {restaurantes.map((restaurante) => (
-                    <View key={restaurante.id} >
-
-                        <View>
-                            {getItensByRestaurante(restaurante.id).map((item) => {return(
-                                
-                                <TouchableOpacity key={item.id} style={styles.itemCard} onPress={() => router.push({ pathname: '/item', params: { restauranteId: restaurante.id } })}>
-                                    <Image source={{ uri: `http://10.3.21.50:8080/itens/image/${item.src.replace("uploads/","")}` }} style={styles.itemImage} />
-
-                                    <View style={styles.itemCardFlex}>
-                                    <Text style={styles.itemCardTitle}>{item.nome}</Text>
-                                    
-                                    <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                )
-})}
-                        </View>
-                    </View>
-                ))}
-            </View>
-
-            <View>
-                {restaurantes.map((restaurante) => (
-                    <View key={restaurante.id}>
-
-                        <View  style={styles.itemsContainer}>
-                            {getItensByRestaurante(restaurante.id).map((item) => {return(
-                                
-                                
-                                    <TouchableOpacity key={item.id} style={styles.itemCard} onPress={() => router.push(`/item`)}>
-                                    <Image source={{ uri: `http://192.168.2.108:8080/itens/image/${item.src.replace("uploads/","")}` }} style={styles.itemImage} />
-
-                                    <View style={styles.itemCardFlex}>
-                                    <Text style={styles.itemCardTitle}>{item.nome}</Text>
-                                    
-                                    <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
-                                    </View>
-                                    </TouchableOpacity>
-                                )
-})}
-                        </View>
-                    </View>
-                ))}
-            </View>
-
-
+            {restaurantes.map((restaurante) => (
+    <View key={restaurante._id} style={styles.itemContainer}>
+        {getItensByRestaurante(restaurante._id).map((item) => (
             
-            <View style={styles.res}>
+            
+            <TouchableOpacity key={item._id} style={styles.itemCard} onPress={() => router.push(`/item`)}>
+                <Image source={{ uri: `http://192.168.2.108:8080/itens/image/uploads/${item.src.replace("uploads/","")}` }} style={styles.itemImage} />
+                <View >
+                    <Text style={styles.itemCardTitle}>{item.nome}</Text>
+                    <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
+                </View>
+            </TouchableOpacity>
+        ))}
+    </View>
+))}
+            </View>
+            <ScrollView style={styles.res}>
             <Text style={styles.sectionTitle}>Restaurantes</Text>
                 {restaurantes.map((restaurante) => (
-                    <View key={restaurante.id} style={styles.restaurantContainer}>
+                    <View key={restaurante._id} style={styles.restaurantContainer}>
 
                         
-                        <TouchableOpacity onPress={() => router.push('/restaurante')}>
-                        <Image source={require("../../assets/Mansao.png")}></Image>
+                        <TouchableOpacity onPress={() =>{
+                         router.push({ pathname: '/restaurante',params: { id: restaurante._id } })}}>  
+                        <Image style={styles.imagem} source={require("../../assets/16233540.png")}></Image>
                         </TouchableOpacity>
                         <View style={styles.restauranteCard}>
                         <Text style={styles.restaurantName}>{restaurante.nome}</Text>
@@ -121,9 +110,9 @@ const Home = () => {
                             {restaurante.avaliacao === 0 ? "Restaurante novo" : `${restaurante.avaliacao} ⭐`}
                         </Text>
                         <View  >
-                            {getItensByRestaurante(restaurante.id).map((item) => {return(
+                            {getItensByRestaurante(restaurante._id).map((item) => {return(
                                 
-                                <View key={item.id} style={styles.itemCard}>
+                                <View key={item._id} style={styles.itemCard}>
                                     
                                     <Text style={styles.itemCardPriceRes}>Menor preço R$ {item.valor}</Text>
                                 </View>
@@ -135,7 +124,8 @@ const Home = () => {
 
                     </View>
                 ))}
-            </View>
+            </ScrollView>
+            </ScrollView>
 
             <FooterMenu />
         </View>
@@ -146,11 +136,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     welcomeText: {
         fontSize: 24,
@@ -164,11 +149,12 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     itemContainer: {
-        marginBottom: 16,
+        height: 100,
         flexDirection:"column",
-    },
-    itemTitle: {
-        fontSize: 16,
+        borderWidth: 1,
+        marginBottom: 30,
+        borderColor:"gray",
+        borderRadius: 8,
     },
     itemPrice: {
         fontSize: 14,
@@ -198,16 +184,14 @@ const styles = StyleSheet.create({
     },
     itemsContainer: {
         flexDirection:"column",
-        height: 100,
-        marginTop: 50,
-        borderWidth: 1,
-        borderColor:"gray",
-        borderRadius: 8,
+        height: 250,
+        marginTop: 40,
+
     },
     itemCard: {
         marginRight: 16,
         width: "100%",
-        height: 200,
+        height: 100,
         flexDirection:"row"
     },
     itemImage: {
@@ -216,9 +200,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     itemCardTitle: {
-        fontSize: 20,
-        marginTop: 12,
+        fontSize: 18,
         marginLeft: 10,
+        marginTop: 12,
         marginBottom: 10,
     },
     itemCardPriceRes: {
@@ -238,11 +222,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 30,
         marginVertical: 10,
     },
-    itemCardFlex:{
-        flexDirection:"column"
-    },
     res:{
         marginTop:40
+    },
+    imagem:{
+        width: 200,
+        height: 165
     }
 });
 

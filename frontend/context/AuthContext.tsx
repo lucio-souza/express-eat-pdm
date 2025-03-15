@@ -23,30 +23,37 @@ interface IProps {
 
 export function AuthProviderContext({ children }: IProps) {
     const [tokenState, setTokenState] = useState<string | null>(null);
-    const [nameUser, setNameUser] = useState<string | null>(null);
 
     
     async function logar(email: string, senha: string) {
         const dados = { email, senha};
 
         try {
-            console.log("#$@#$@#$@#$#@$@$@#$#@$#@$@#$@#$#@$");
             
             console.log(dados);
-            const response = await axios.post('http://10.3.21.50:8080/users/login', dados);
+            const response = await axios.post('http://192.168.2.108:8080/users/login', dados);
+            console.log(response.data);
+            if (response.status == 404) {
+                console.log('Credenciais inválidas');
+            }
+            
+            
             
 
-            const { token } = response.data as { token: string
-                
-            };
+            const  token  = response.data as string
+            console.log(token);
             axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
             await AsyncStorage.setItem('auth.token', token);
             setTokenState(token); 
-            router.replace('/home'); 
+            
+            router.push({pathname: '/home',params:{email:email}}); 
 
-        } catch (error) {
+        } catch (error:any) {
             console.error('Erro ao fazer login:', error);
+            throw new Error(error.response?.data?.message || "Credenciais inválidas");
+            
+            
         }
     }
 
@@ -54,7 +61,6 @@ export function AuthProviderContext({ children }: IProps) {
     async function deslogar() {
         try {
             setTokenState(null); 
-            setNameUser(null); 
             await AsyncStorage.removeItem('auth.token'); 
 
             axios.defaults.headers.common.Authorization = null; 
@@ -73,7 +79,7 @@ export function AuthProviderContext({ children }: IProps) {
 
             if (tokenStorage) {
                 axios.defaults.headers.common.Authorization = `Bearer ${tokenStorage}`; 
-                const response = await axios.get("http://10.3.21.50:8080/validate-token", {
+                const response = await axios.get("http://192.168.2.108:8080/validate-token", {
                     headers: {
                         Authorization: `Bearer ${tokenStorage}`,
                     },

@@ -2,9 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useAuth } from '../../hooks/useAuth';
 
 const FooterMenu = () => {
     const router = useRouter();
+
+    const {deslogar} = useAuth();
+    
 
     return (
         <View style={styles.footer}>
@@ -23,7 +27,7 @@ const FooterMenu = () => {
                 <Text style={styles.footerText}>pedidos</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.footerItem} onPress={() => router.replace('/profile')}>
+            <TouchableOpacity style={styles.footerItem} onPress={() => deslogar()}>
                 <Ionicons name="person" size={24} color="#000" />
                 <Text style={styles.footerText}>Perfil</Text>
             </TouchableOpacity>
