@@ -5,7 +5,6 @@ import pedidoRouter from "./src/routes/pedidoRouter"
 import dotenv from "dotenv";
 import itemRouter from "./src/routes/itemRouter";
 import jwt from 'jsonwebtoken';
-import path from 'path';
 
 dotenv.config();
 
@@ -19,14 +18,16 @@ app.use('/restaurantes',restauranteRouter)
 app.use('/pedidos',pedidoRouter)
 app.use('/itens', itemRouter)
 app.get('/validate-token', (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Extrai o token do cabeçalho
+  const token = req.headers.authorization?.split(' ')[1];
+  console.log(token);
+   // Extrai o token do cabeçalho
 
   if (!token) {
       return res.status(401).json({ error: 'Token não fornecido' });
   }
 
   // Verifica se o token é válido (exemplo usando JWT)
-  jwt.verify(token, 'sua_chave_secreta', (err, decoded) => {
+  jwt.verify(token,process.env.TOKEN_KEY as string, (err, decoded) => {
       if (err) {
           return res.status(401).json({ error: 'Token inválido' });
       }

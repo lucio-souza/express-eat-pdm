@@ -41,7 +41,7 @@ class UserController {
 
   async editUser(req: Request, res: Response) {
     const { nome, idade, localizacao, senha } = req.body;
-    const  id  = req.ID;
+    const  {id } = req.params;
 
     const result = await UserRepository.updateUser({ nome, idade, localizacao, senha },id);
 
@@ -51,7 +51,7 @@ class UserController {
   }
 
   async eraseUser(req: Request, res: Response) {
-    const id=req.ID;
+    const {id}=req.params;
     const result = await UserRepository.deleteUser(id);
 
     result.status === 200
@@ -69,7 +69,7 @@ class UserController {
   }
   
   async createAvaliation(req:Request,res:Response){
-    const idRestaurante=req.headers['idrestaurante'] as string;
+    const {idRestaurante}=req.params;
     const {nota}=req.body;
     const idUser=req.ID;
 

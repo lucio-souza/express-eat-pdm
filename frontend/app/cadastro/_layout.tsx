@@ -14,9 +14,9 @@ const Cadastro = () => {
 
   const router = useRouter();
 
-  const [selectedLocation, setSelectedLocation] = useState({
-    latitude: -6.8970,
-    longitude: -38.5570,
+  const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number }>({
+    latitude: -6.8691,
+    longitude: -38.5661
   });
 
   type cadastroData = z.infer<typeof cadastroSchema>;
@@ -31,24 +31,34 @@ const Cadastro = () => {
 
   const onSubmit = async (data:cadastroData) => {
     const { nome,email, senha,cpf,idade } = data;
+
+    if (!selectedLocation) {
+      alert("Por favor, selecione uma localização no mapa.");
+      return;
+    }
     
     try {
       await axios.post("http://192.168.2.108:8080/users", {
-        nome:nome,
-        email:email,
-        senha:senha,
-        idade:idade,
-        cpf:cpf,
+        nome,
+        email,
+        senha,
+        idade,
+        cpf,
         localizacao: {
-            type: "Point",
-            coordinates: [selectedLocation.latitude, selectedLocation.longitude], // Envia a localização selecionada
-          },
+          type: "Point",
+          coordinates: [selectedLocation.longitude, selectedLocation.latitude], // Corrigido
+        },
       });
+      alert("usuario criado com sucesso");
       router.push("/login");
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
     }
   };
+
+  function redirect(){
+    router.replace('/login');
+  }
   
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
@@ -129,7 +139,11 @@ const Cadastro = () => {
         onLocationSelect={setSelectedLocation}
       />
 
+      <View style={{flexDirection:"row",height:800}}>
+      <ButtonEnviar Press={redirect} text="Cancelar" />
       <ButtonEnviar Press={handleSubmit(onSubmit)} text="Cadastrar" />
+      
+      </View>
     </View>
   );
 };

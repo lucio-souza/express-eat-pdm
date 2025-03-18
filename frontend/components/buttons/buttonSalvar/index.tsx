@@ -2,7 +2,7 @@ import {Text,TouchableOpacity, StyleSheet } from "react-native";
 
 type props={
     text:string,
-    Press:()=>void
+        Press:()=>void
 }
 
 export const ButtonEnviar=({text,Press}:props)=>{
@@ -20,11 +20,11 @@ const style=  StyleSheet.create({
         justifyContent:"center",
         backgroundColor:"#8FCFEE",
         borderRadius:30,
-        padding:10,
         width:"45%",
         height:"8%",
         marginTop:20,
-        marginHorizontal:20,
+        marginLeft:10,
+        marginRight:10
     },
     text:{
         textAlign:"center",

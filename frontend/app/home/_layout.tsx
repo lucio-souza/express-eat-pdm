@@ -4,9 +4,12 @@ import FooterMenu from '../../components/footerMenu';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
+import { useAuth } from '../../hooks/useAuth';
 
 
 const Home = () => {
+
+    const { email} = useAuth();
 
     interface Item {
         _id: string;
@@ -32,7 +35,6 @@ const Home = () => {
     const [itens, setItens] = useState<Item[]>([]);
     const [user, setUser] = useState<User | null>(null);
 
-    const { email} = useLocalSearchParams();
 
 
 
@@ -68,6 +70,7 @@ const Home = () => {
     };
 
 
+
     
 
     return (
@@ -79,10 +82,8 @@ const Home = () => {
 
             <View style={styles.itemsContainer}>
             {restaurantes.map((restaurante) => (
-    <View key={restaurante._id} style={styles.itemContainer}>
+            <View key={restaurante._id} style={styles.itemContainer}>
         {getItensByRestaurante(restaurante._id).map((item) => (
-            
-            
             <TouchableOpacity key={item._id} style={styles.itemCard} onPress={() => router.push(`/item`)}>
                 <Image source={{ uri: `http://192.168.2.108:8080/itens/image/uploads/${item.src.replace("uploads/","")}` }} style={styles.itemImage} />
                 <View >
@@ -90,10 +91,10 @@ const Home = () => {
                     <Text style={styles.itemCardPrice}>R$ {item.valor}</Text>
                 </View>
             </TouchableOpacity>
-        ))}
-    </View>
-))}
+            ))}
             </View>
+        ))}</View>
+
             <ScrollView style={styles.res}>
             <Text style={styles.sectionTitle}>Restaurantes</Text>
                 {restaurantes.map((restaurante) => (

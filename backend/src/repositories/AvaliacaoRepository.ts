@@ -41,6 +41,7 @@ class AvaliacaoRepository{
           for (const avaliacao of avaliacoes) {
             const usuario = await User.findById(avaliacao.idUser);
             avaliacoesNameUser.push({
+              _id:avaliacao._id,
               idUser:avaliacao.idUser,
               nomeUsuario: usuario?.nome, 
               nota: avaliacao.nota

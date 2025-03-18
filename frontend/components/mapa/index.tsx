@@ -20,7 +20,7 @@ const Mapa = ({ initialLocation, onLocationSelect }: MapaProps) => {
         initialRegion={{
           latitude: initialLocation.latitude,
           longitude: initialLocation.longitude,
-          latitudeDelta: 0.0922,
+          latitudeDelta: 0.0922, // Ajuste aqui para o zoom
           longitudeDelta: 0.0421,
         }}
         onPress={handleMapPress}
